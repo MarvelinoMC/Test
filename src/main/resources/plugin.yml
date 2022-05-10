@@ -1,0 +1,9 @@
+name: Marvelinoserver
+version: '${project.version}'
+main: de.marvelino.marvelinoserver.Marvelinoserver
+api-version: 1.18
+commands:
+  gm:
+    aliases: ["gamemode"]
+  hsc:
+    aliases: ["healthscale"]
