@@ -9,9 +9,26 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class RandomTeleport
 {
+    private boolean activated = false;
+
     private Player player;
     private boolean active = false;
-    private int time_since_teleport = 0, time_teleport = (int)(Math.random() * 600 + 1);
+    private int timeSinceTeleport = 0, timeTeleport = (int)(Math.random() * 600 + 1);
+
+    public boolean getActivated()
+    {
+        return activated;
+    }
+
+    public String getChallengeName()
+    {
+        return "RandomTeleport";
+    }
+
+    public void setActivated()
+    {
+        activated = !activated;
+    }
 
     public void start(Player player, Marvelinoserver marvelinoserver)
     {
@@ -36,14 +53,14 @@ public class RandomTeleport
 
     public void timeTeleport()
     {
-        if (time_since_teleport == time_teleport)
+        if (timeSinceTeleport == timeTeleport)
         {
             teleport();
-            time_since_teleport = 0;
-            time_teleport = (int)(Math.random() * 600 + 1);
+            timeSinceTeleport = 0;
+            timeTeleport = (int)(Math.random() * 600 + 1);
         }
 
-        time_since_teleport++;
+        timeSinceTeleport++;
     }
 
     public void teleport()

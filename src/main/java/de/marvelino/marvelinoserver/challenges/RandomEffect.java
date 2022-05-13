@@ -9,10 +9,27 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class RandomEffect
 {
+    private boolean activated = false;
+
     private Player player;
     private boolean active = false;
     private PotionEffectType potionEffectType = PotionEffectType.ABSORPTION;
-    private int time_since_effect = 0, time_effect = (int)(Math.random() * 300 + 1);
+    private int timeSinceEffect = 0, timeEffect = (int)(Math.random() * 300 + 1);
+
+    public boolean getActivated()
+    {
+        return activated;
+    }
+
+    public String getChallengeName()
+    {
+        return "RandomEffect";
+    }
+
+    public void setActivated()
+    {
+        activated = !activated;
+    }
 
     public void start(Player player, Marvelinoserver marvelinoserver)
     {
@@ -41,14 +58,14 @@ public class RandomEffect
 
     public void timeEffect(Player player)
     {
-        if (time_since_effect == time_effect)
+        if (timeSinceEffect == timeEffect)
         {
             effect(player);
-            time_since_effect = 0;
-            time_effect = (int)(Math.random() * 300 + 1);
+            timeSinceEffect = 0;
+            timeEffect = (int)(Math.random() * 300 + 1);
         }
 
-        time_since_effect++;
+        timeSinceEffect++;
     }
 
     public void effect(Player player)

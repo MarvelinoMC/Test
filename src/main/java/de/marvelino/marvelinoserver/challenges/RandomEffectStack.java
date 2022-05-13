@@ -9,11 +9,28 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 public class RandomEffectStack
 {
+    private boolean activated = false;
+
     private Player player;
     private boolean active = false;
-    private int time_since_effect = 0;
-    private int time_effect = (int)(Math.random() * 600 + 1);
-    private int absorption_amp, bad_omen_amp, blindness_amp, conduit_power_amp, confusion_amp, damage_resistance_amp, dolphins_grace_amp, fast_digging_amp, fire_resistance_amp, glowing_amp, hero_of_the_village_amp, hunger_amp, increase_damage_amp, invisibility_amp, jump_amp, levitation_amp, luck_amp, night_vision_amp, poison_amp, regeneration_amp, saturation_amp, slow_amp, slow_digging_amp, slow_falling_amp, speed_amp, unluck_amp, water_breathing_amp, weakness_amp, heal_amp, health_boost_amp, wither_amp, harm_amp;
+    private int timeSinceEffect = 0;
+    private int timeEffect = (int)(Math.random() * 600 + 1);
+    private int absorptionAmp, badOmenAmp, blindnessAmp, conduitPowerAmp, confusionAmp, damageResistanceAmp, dolphinsGraceAmp, fastDiggingAmp, fireResistanceAmp, glowingAmp, heroOfTheVillageAmp, hungerAmp, increaseDamageAmp, invisibilityAmp, jumpAmp, levitationAmp, luckAmp, nightVisionAmp, poisonAmp, regenerationAmp, saturationAmp, slowAmp, slowDiggingAmp, slowFallingAmp, speedAmp, unluckAmp, waterBreathingAmp, weaknessAmp, healAmp, healthBoostAmp, witherAmp, harmAmp;
+
+    public boolean getActivated()
+    {
+        return activated;
+    }
+
+    public String getChallengeName()
+    {
+        return "RandomEffectStack";
+    }
+
+    public void setActivated()
+    {
+        activated = !activated;
+    }
 
     public void start(Player player, Marvelinoserver marvelinoserver)
     {
@@ -26,7 +43,7 @@ public class RandomEffectStack
             {
                 scheduler.cancelTasks(marvelinoserver);
             }
-            timeEffect(player);
+            timeEffect();
         }, 0, 20);
     }
 
@@ -40,182 +57,182 @@ public class RandomEffectStack
         player.sendMessage(ChatColor.DARK_AQUA + "Challenge RandomEffectStack wurde gestoppt!");
     }
 
-    public void timeEffect(Player player)
+    public void timeEffect()
     {
-        if (time_since_effect == time_effect)
+        if (timeSinceEffect == timeEffect)
         {
-            effect(player);
-            time_since_effect = 0;
-            time_effect = (int)(Math.random() * 600 + 1);
+            effect();
+            timeSinceEffect = 0;
+            timeEffect = (int)(Math.random() * 600 + 1);
         }
 
-        time_since_effect++;
+        timeSinceEffect++;
     }
 
-    public void effect(Player player)
+    public void effect()
     {
         player.sendMessage(ChatColor.GREEN + "Neuer Effekt!");
         int random = (int) (Math.random() * 32 + 1);
 
         if (random == 1)
         {
-            absorption_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, Integer.MAX_VALUE, absorption_amp - 1));
+            absorptionAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, Integer.MAX_VALUE, absorptionAmp - 1));
         }
         else if (random == 2)
         {
-            bad_omen_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BAD_OMEN, Integer.MAX_VALUE, bad_omen_amp - 1));
+            badOmenAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BAD_OMEN, Integer.MAX_VALUE, badOmenAmp - 1));
         }
         else if (random == 3)
         {
-            blindness_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, blindness_amp - 1));
+            blindnessAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, blindnessAmp - 1));
         }
         else if (random == 4)
         {
-            conduit_power_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.CONDUIT_POWER, Integer.MAX_VALUE, conduit_power_amp - 1));
+            conduitPowerAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.CONDUIT_POWER, Integer.MAX_VALUE, conduitPowerAmp - 1));
         }
         else if (random == 5)
         {
-            confusion_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, confusion_amp - 1));
+            confusionAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Integer.MAX_VALUE, confusionAmp - 1));
         }
         else if (random == 6)
         {
-            damage_resistance_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, damage_resistance_amp - 1));
+            damageResistanceAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, Integer.MAX_VALUE, damageResistanceAmp - 1));
         }
         else if (random == 7)
         {
-            dolphins_grace_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, Integer.MAX_VALUE, dolphins_grace_amp - 1));
+            dolphinsGraceAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, Integer.MAX_VALUE, dolphinsGraceAmp - 1));
         }
         else if (random == 8)
         {
-            fast_digging_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, fast_digging_amp - 1));
+            fastDiggingAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, fastDiggingAmp - 1));
         }
         else if (random == 9)
         {
-            fire_resistance_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, fire_resistance_amp - 1));
+            fireResistanceAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, fireResistanceAmp - 1));
         }
         else if (random == 10)
         {
-            glowing_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, glowing_amp - 1));
+            glowingAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, Integer.MAX_VALUE, glowingAmp - 1));
         }
         else if (random == 11)
         {
-            hero_of_the_village_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE, Integer.MAX_VALUE, hero_of_the_village_amp - 1));
+            heroOfTheVillageAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HERO_OF_THE_VILLAGE, Integer.MAX_VALUE, heroOfTheVillageAmp - 1));
         }
         else if (random == 12)
         {
-            hunger_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, hunger_amp - 1));
+            hungerAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, hungerAmp - 1));
         }
         else if (random == 13)
         {
-            increase_damage_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, increase_damage_amp - 1));
+            increaseDamageAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, Integer.MAX_VALUE, increaseDamageAmp - 1));
         }
         else if (random == 14)
         {
-            invisibility_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, invisibility_amp - 1));
+            invisibilityAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, invisibilityAmp - 1));
         }
         else if (random == 15)
         {
-            jump_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, jump_amp - 1));
+            jumpAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, jumpAmp - 1));
         }
         else if (random == 16)
         {
-            levitation_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, levitation_amp - 1));
+            levitationAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, Integer.MAX_VALUE, levitationAmp - 1));
         }
         else if (random == 17)
         {
-            luck_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, Integer.MAX_VALUE, luck_amp - 1));
+            luckAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, Integer.MAX_VALUE, luckAmp - 1));
         }
         else if (random == 18)
         {
-            night_vision_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, night_vision_amp - 1));
+            nightVisionAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, nightVisionAmp - 1));
         }
         else if (random == 19)
         {
-            poison_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, poison_amp - 1));
+            poisonAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, Integer.MAX_VALUE, poisonAmp - 1));
         }
         else if (random == 20)
         {
-            regeneration_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, regeneration_amp - 1));
+            regenerationAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, regenerationAmp - 1));
         }
         else if (random == 21)
         {
-            saturation_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, saturation_amp - 1));
+            saturationAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, Integer.MAX_VALUE, saturationAmp - 1));
         }
         else if (random == 22)
         {
-            slow_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, slow_amp - 1));
+            slowAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, slowAmp - 1));
         }
         else if (random == 23)
         {
-            slow_digging_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, slow_digging_amp - 1));
+            slowDiggingAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, slowDiggingAmp - 1));
         }
         else if (random == 24)
         {
-            slow_falling_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, slow_falling_amp - 1));
+            slowFallingAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, slowFallingAmp - 1));
         }
         else if (random == 25)
         {
-            speed_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, speed_amp - 1));
+            speedAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, speedAmp - 1));
         }
         else if (random == 26)
         {
-            unluck_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, Integer.MAX_VALUE, unluck_amp - 1));
+            unluckAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.UNLUCK, Integer.MAX_VALUE, unluckAmp - 1));
         }
         else if (random == 27)
         {
-            water_breathing_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, water_breathing_amp - 1));
+            waterBreathingAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, Integer.MAX_VALUE, waterBreathingAmp - 1));
         }
         else if (random == 28)
         {
-            weakness_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, weakness_amp - 1));
+            weaknessAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, Integer.MAX_VALUE, weaknessAmp - 1));
         }
         else if (random == 29)
         {
-            heal_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, heal_amp - 1));
+            healAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, Integer.MAX_VALUE, healAmp - 1));
         }
         else if (random == 30)
         {
-            health_boost_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, Integer.MAX_VALUE, health_boost_amp - 1));
+            healthBoostAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HEALTH_BOOST, Integer.MAX_VALUE, healthBoostAmp - 1));
         }
         else if (random == 31)
         {
-            wither_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, wither_amp - 1));
+            witherAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, Integer.MAX_VALUE, witherAmp - 1));
         }
         else if (random == 32)
         {
-            harm_amp++;
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HARM, Integer.MAX_VALUE, harm_amp - 1));
+            harmAmp++;
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HARM, Integer.MAX_VALUE, harmAmp - 1));
         }
         else
         {

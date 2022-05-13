@@ -1,7 +1,5 @@
 package de.marvelino.marvelinoserver;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import de.marvelino.marvelinoserver.challenges.RandomEffect;
 import de.marvelino.marvelinoserver.challenges.RandomEffectStack;
 import de.marvelino.marvelinoserver.challenges.RandomTeleport;
@@ -9,127 +7,130 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.Skull;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
+import java.util.*;
 
 public class ChallengePlugIn implements Listener
 {
-    // Inventorys
-    private final Inventory overview = Bukkit.createInventory(null, 27, "Challenge Settings");
-    private final Inventory challengesOne = Bukkit.createInventory(null, 27, "Challenge Auswahl");
+    // Inventorys / Items
+    private final ArrayList<Inventory> inventorys = new ArrayList<>();
+    private final ArrayList<ItemStack> itemStacks = new ArrayList<>();
+    private final ItemBuilder itemBuilder = new ItemBuilder();
 
     // Challenges
-    private final boolean[] challengesActivated = new boolean[3];
-
+    private boolean challengeStarted = false;
     private final RandomTeleport randomTeleport = new RandomTeleport();
     private final RandomEffect randomEffect = new RandomEffect();
     private final RandomEffectStack randomEffectStack = new RandomEffectStack();
 
     // Sonstiges
     private Player player;
+    private ItemMeta clickedItemMeta;
     private final Marvelinoserver marvelinoserver;
-    private ItemMeta itemMeta;
-    private SkullMeta skullMeta;
-    private boolean challengeison = false;
 
     public ChallengePlugIn(Marvelinoserver marvelinoserver)
     {
         this.marvelinoserver = marvelinoserver;
 
-        // Creating ItemStacks
-        ItemStack wsgp = new ItemStack(Material.WHITE_STAINED_GLASS_PANE);
-        ItemStack grass_block = new ItemStack(Material.GRASS_BLOCK);
-        ItemStack lime_dye = new ItemStack(Material.LIME_DYE);
-        ItemStack red_dye = new ItemStack(Material.RED_DYE);
+        // CREATE INVENTORYS AND ITEMS
+        // Create Inventorys
+        Inventory overview = Bukkit.createInventory(null, 27, "Challenge Settings"); // 0
+        Inventory challengeOne = Bukkit.createInventory(null, 27, "Challenge Auswahl (Seite 1)"); // 1
+        Inventory challengeTwo = Bukkit.createInventory(null, 27, "Challenge Auswahl (Seite 2)"); // 2
 
-        ItemStack randomTeleportItem = new ItemStack(Material.ENDER_PEARL);
-        ItemStack randomEffectItem = new ItemStack(Material.GLASS_BOTTLE);
-        ItemStack randomEffectStackItem = new ItemStack(Material.POTION);
+        List<Inventory> inventorysList = Arrays.asList(overview, challengeOne, challengeTwo);
+        inventorys.addAll(inventorysList);
 
-        // Creating Heads
-        /**
-        ItemStack arrow_right = new ItemStack(Material.PLAYER_HEAD);
-        skullMeta = (SkullMeta) arrow_right.getItemMeta();
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        profile.getProperties().put("textures", new Property("textures", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19"));
+        // Create ItemStacks
+        ItemStack openCompass = new ItemStack(Material.COMPASS); // 0
 
-        try {
-            Field profileField = skullMeta.getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(skullMeta, profile);
-        } catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        ItemStack wsgp = new ItemStack(Material.WHITE_STAINED_GLASS_PANE); // 1
+        ItemStack grassBlock = new ItemStack(Material.GRASS_BLOCK); // 2
+        ItemStack limeDye = new ItemStack(Material.LIME_DYE); // 3
 
-        arrow_right.setItemMeta(skullMeta);
-         **/
+        ItemStack randomTeleportItem = new ItemStack(Material.ENDER_PEARL); // 4
+        ItemStack randomEffectItem = new ItemStack(Material.GLASS_BOTTLE); // 5
+        ItemStack randomEffectStackItem = new ItemStack(Material.POTION); // 6
 
-        // Item Meta
-        itemMeta = grass_block.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "Challenge Auswahl");
-        grass_block.setItemMeta(itemMeta);
+        ItemStack arrowRight = new ItemStack(Material.PLAYER_HEAD); // 7
 
-        itemMeta = wsgp.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "");
-        wsgp.setItemMeta(itemMeta);
+        List<ItemStack> itemStacksList = Arrays.asList(openCompass, wsgp, grassBlock, limeDye, randomTeleportItem, randomEffectItem, randomEffectStackItem, arrowRight);
+        itemStacks.addAll(itemStacksList);
 
-        itemMeta = red_dye.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "Challenge stoppen");
-        red_dye.setItemMeta(itemMeta);
+        // Set ItemMeta
+        itemStacks.get(0).setItemMeta(itemBuilder.setName(itemStacks.get(0), "Challenge Menü"));
 
-        itemMeta = lime_dye.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "Challenge starten");
-        lime_dye.setItemMeta(itemMeta);
+        itemStacks.get(1).setItemMeta(itemBuilder.setName(itemStacks.get(1), ""));
+        itemStacks.get(2).setItemMeta(itemBuilder.setName(itemStacks.get(2), "Challenge Auswahl"));
+        itemStacks.get(3).setItemMeta(itemBuilder.setName(itemStacks.get(3), "Challenge starten"));
 
-        itemMeta = randomTeleportItem.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "RandomTeleport (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        randomTeleportItem.setItemMeta(itemMeta);
+        itemStacks.get(4).setItemMeta(itemBuilder.setNameC(itemStacks.get(4), "RandomTeleport"));
+        itemStacks.get(5).setItemMeta(itemBuilder.setNameC(itemStacks.get(5), "RandomEffect"));
+        itemStacks.get(6).setItemMeta(itemBuilder.setNameCP(itemStacks.get(6), "RandomEffectStack"));
 
-        itemMeta = randomEffectItem.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "RandomEffect (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        randomEffectItem.setItemMeta(itemMeta);
+        itemStacks.get(7).setItemMeta(itemBuilder.createHead(itemStacks.get(7), "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGVmMzU2YWQyYWE3YjE2NzhhZWNiODgyOTBlNWZhNWEzNDI3ZTVlNDU2ZmY0MmZiNTE1NjkwYzY3NTE3YjgifX19"));
+        itemStacks.get(7).setItemMeta(itemBuilder.setName(itemStacks.get(7), "Nächste Seite", ChatColor.YELLOW));
 
-        itemMeta = randomEffectStackItem.getItemMeta();
-        itemMeta.setDisplayName(ChatColor.WHITE + "RandomEffectStack (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-        itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        itemMeta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-        randomEffectStackItem.setItemMeta(itemMeta);
-
+        // FILL INVENTORYS
         // Overview
         for (int i = 0; i <= 26; i++)
         {
-            overview.setItem(i, wsgp);
+            inventorys.get(0).setItem(i, itemStacks.get(1));
         }
 
-        overview.setItem(10, grass_block);
-        overview.setItem(13, red_dye);
-        overview.setItem(16, lime_dye);
+        inventorys.get(0).setItem(10, itemStacks.get(2));
+        inventorys.get(0).setItem(16, itemStacks.get(3));
 
         // Challenge One
         for (int i = 0; i <= 26; i++)
         {
-            challengesOne.setItem(i, wsgp);
+            inventorys.get(1).setItem(i, itemStacks.get(1));
         }
 
-        challengesOne.setItem(10, randomTeleportItem);
-        challengesOne.setItem(11, randomEffectItem);
-        challengesOne.setItem(12, randomEffectStackItem);
-        //challengesOne.setItem(16, arrow_right);
+        inventorys.get(1).setItem(10, itemStacks.get(4));
+        inventorys.get(1).setItem(11, itemStacks.get(5));
+        inventorys.get(1).setItem(12, itemStacks.get(6));
+        inventorys.get(1).setItem(16, itemStacks.get(7));
+
+        // Challenge Two
+        for (int i = 0; i <= 26; i++)
+        {
+            inventorys.get(2).setItem(i, itemStacks.get(1));
+        }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event)
+    {
+        player = event.getPlayer();
+        event.setJoinMessage(ChatColor.YELLOW + player.getName() + " ist auf den Server gehüpft!");
+
+        if (!(challengeStarted))
+        {
+            player.setGameMode(GameMode.CREATIVE);
+            if (!(player.getInventory().contains(itemStacks.get(0))))
+            {
+                player.getInventory().addItem(itemStacks.get(0));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLeft(PlayerQuitEvent event)
+    {
+        player = event.getPlayer();
+        event.setQuitMessage(ChatColor.YELLOW + player.getName() + " verabschiedet sich!");
     }
 
     @EventHandler
@@ -140,9 +141,9 @@ public class ChallengePlugIn implements Listener
         ItemStack itemStack = event.getItem();
         player = event.getPlayer();
 
-        if (itemStack.getType() == Material.COMPASS)
+        if (itemStack.equals(itemStacks.get(0)))
         {
-            player.openInventory(overview);
+            player.openInventory(inventorys.get(0));
         }
     }
 
@@ -151,107 +152,75 @@ public class ChallengePlugIn implements Listener
     {
         ItemStack clicked = event.getCurrentItem();
         Inventory clickedInventory = event.getClickedInventory();
-        Material clickedMaterial = clicked.getType();
-        ItemMeta clickedMeta = clicked.getItemMeta();
+        clickedItemMeta = clicked.getItemMeta();
 
-        if (!(challengeison))
+        if (!(challengeStarted))
         {
             event.setCancelled(true);
         }
 
-        if (clickedInventory == overview)
+        if (clickedInventory == inventorys.get(0))
         {
             event.setCancelled(true);
 
-            if (clickedMaterial == Material.GRASS_BLOCK)
+            if (clicked.equals(itemStacks.get(2)))
             {
-                player.openInventory(challengesOne);
+                player.openInventory(inventorys.get(1));
             }
-            else if (clickedMaterial == Material.LIME_DYE)
+            else if (clicked.equals(itemStacks.get(3)))
             {
                 player.closeInventory();
                 player.getInventory().clear();
-
                 player.setGameMode(GameMode.SURVIVAL);
 
-                if (challengesActivated[0]) {randomTeleport.start(player, marvelinoserver);}
-                if (challengesActivated[1]) {randomEffect.start(player, marvelinoserver);}
-                if (challengesActivated[2]) {randomEffectStack.start(player, marvelinoserver);}
+                if (randomTeleport.getActivated()) {randomTeleport.start(player, marvelinoserver);}
+                if (randomEffect.getActivated()) {randomEffect.start(player, marvelinoserver);}
+                if (randomEffectStack.getActivated()) {randomEffectStack.start(player, marvelinoserver);}
 
-                challengeison = true;
-            }
-            else if (clickedMaterial == Material.RED_DYE)
-            {
-                ItemStack compass = new ItemStack(Material.COMPASS);
-                player.closeInventory();
-                player.getInventory().addItem(compass);
-
-                player.setGameMode(GameMode.CREATIVE);
-
-                if (challengesActivated[0]) {randomTeleport.stop();}
-                if (challengesActivated[1]) {randomEffect.stop();}
-                if (challengesActivated[2]) {randomEffectStack.stop();}
-
-                challengeison = false;
+                challengeStarted = true;
             }
         }
-        else if (event.getInventory() == challengesOne)
+        else if (event.getInventory() == inventorys.get(1))
         {
             event.setCancelled(true);
 
-            if (!(clickedMaterial == Material.WHITE_STAINED_GLASS_PANE))
+            if (!(clicked.equals(itemStacks.get(1))) && !(clicked.getType() == Material.PLAYER_HEAD))
             {
-                if (clickedMeta.hasEnchants())
+                if (clickedItemMeta.hasEnchants())
                 {
-                    clickedMeta.removeEnchant(Enchantment.MENDING);
+                    clickedItemMeta.removeEnchant(Enchantment.MENDING);
                 }
                 else
                 {
-                    clickedMeta.addEnchant(Enchantment.MENDING, 1, true);
+                    clickedItemMeta.addEnchant(Enchantment.MENDING, 1, true);
                 }
             }
 
-            if (clickedMaterial == Material.ENDER_PEARL)
+            if (clicked.equals(itemStacks.get(4)))
             {
-                if (challengesActivated[0])
-                {
-                    challengesActivated[0] = false;
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomTeleport (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-                }
-                else
-                {
-                    challengesActivated[0] = true;
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomTeleport (" + ChatColor.GREEN + "Aktiviert" + ChatColor.WHITE + ")");
-                }
+                randomTeleport.setActivated();
+                clickedItemMeta = itemBuilder.changeNameC(clickedItemMeta, randomTeleport.getChallengeName(), randomTeleport.getActivated());
+                itemStacks.get(4).setItemMeta(clickedItemMeta);
             }
-            if (clickedMaterial == Material.GLASS_BOTTLE)
+            else if (clicked.equals(itemStacks.get(5)))
             {
-                if (challengesActivated[1])
-                {
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomEffect (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-                    challengesActivated[1] = false;
-                }
-                else
-                {
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomEffect (" + ChatColor.GREEN + "Aktiviert" + ChatColor.WHITE + ")");
-                    challengesActivated[1] = true;
-                }
+                randomEffect.setActivated();
+                clickedItemMeta = itemBuilder.changeNameC(clickedItemMeta, randomEffect.getChallengeName(), randomEffect.getActivated());
+                itemStacks.get(5).setItemMeta(clickedItemMeta);
             }
-            if (clickedMaterial == Material.POTION)
+            else if (clicked.equals(itemStacks.get(6)))
             {
-                if (challengesActivated[2])
-                {
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomEffectStack (" + ChatColor.RED + "Deaktiviert" + ChatColor.WHITE + ")");
-                    challengesActivated[2] = false;
-                }
-                else
-                {
-                    clickedMeta.setDisplayName(ChatColor.WHITE + "RandomEffectStack (" + ChatColor.GREEN + "Aktiviert" + ChatColor.WHITE + ")");
-                    challengesActivated[2] = true;
-                }
+                randomEffectStack.setActivated();
+                clickedItemMeta = itemBuilder.changeNameC(clickedItemMeta, randomEffectStack.getChallengeName(), randomEffectStack.getActivated());
+                itemStacks.get(6).setItemMeta(clickedItemMeta);
+            }
+            else if (clickedItemMeta.getDisplayName().equals(itemStacks.get(7).getItemMeta().getDisplayName()))
+            {
+                player.openInventory(inventorys.get(2));
             }
         }
 
-        clicked.setItemMeta(clickedMeta);
+        clicked.setItemMeta(clickedItemMeta);
     }
 }
+//TODO: Neue Sortierung zeigen
